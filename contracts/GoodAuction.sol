@@ -14,7 +14,7 @@ contract GoodAuction is AuctionInterface {
 	 * retrieve their funds
 	 */
 	function bid() payable external returns(bool) {
-		if (msg.value > getHighestBid() && getHighestBidder() != 0){
+		if (msg.value > getHighestBid()){
 			refunds[highestBidder] += getHighestBid();
 			highestBidder = msg.sender;
 			highestBid = msg.value;
@@ -22,7 +22,7 @@ contract GoodAuction is AuctionInterface {
 			return true;
 		} else {
 			refunds[msg.sender] += msg.value;
-			msg.sender.transfer(msg.value);
+			//oops no sending here bc refunds mapping
 			return false;
 		}
 	}
@@ -30,6 +30,7 @@ contract GoodAuction is AuctionInterface {
 	/* New withdraw function, shifts to push paradigm */
 	function withdrawRefund() external returns(bool) {
 		uint refund = refunds[msg.sender];
+
 		refunds[msg.sender] = 0;
 		msg.sender.transfer(refund);
 		return true;
